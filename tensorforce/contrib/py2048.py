@@ -1,4 +1,7 @@
 """Game class to represent 2048 game state."""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 from tensorforce.environments import Environment
 import numpy as np
@@ -20,7 +23,7 @@ class Game2048(Environment):
     """
 
     def __str__(self):
-        self.print_state()
+        self.print_state
 
     def reset(self):
         self.__init__()
@@ -179,10 +182,11 @@ class Game2048(Environment):
           return '% 5d' % (2 ** value,)
         return "     "
 
-      print "-" * 25
+      separator_line = '-' * 25
+      print(separator_line)
       for row in range(4):
-        print "|" + "|".join([tile_string(v) for v in self._state[row, :]]) + "|"
-        print "-" * 25
+        print("|" + "|".join([tile_string(v) for v in self._state[row, :]]) + "|")
+        print(separator_line)
 
     def state(self):
       """Return current state."""

@@ -16,6 +16,10 @@
     },
     {
         "type": "dense",
+        "size": 256
+    },
+    {
+        "type": "dense",
         "size": 4
     }
 ]
