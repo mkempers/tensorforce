@@ -66,7 +66,17 @@ agent = PPOAgent(
     gae_lambda=None,
     # PGLRModel
     likelihood_ratio_clipping=0.2,
-    summary_spec=None,
+    summary_spec=dict(directory="./board/",
+                      steps=50,
+                      # Add custom keys to export
+                      labels=['configuration',
+                              'gradients_scalar',
+                              'gradients_histogram',
+                              'regularization',
+                              'inputs',
+                              'losses',
+                              'variables']
+                      ),
     distributed_spec=None
 )
 

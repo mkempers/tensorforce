@@ -1,0 +1,10 @@
+{
+  "directory": "./board/",
+  "steps":50,
+  "labels":["configuration",
+    "gradients_scalar",
+    "regularization",
+    "inputs",
+    "losses",
+    "variables"]
+}

@@ -1,0 +1,22 @@
+{
+  "type": "ppo_agent",
+  "batch_size": 512,
+  "batched_observe": 512,
+  "step_optimizer": {
+    "type": "adam",
+    "learning_rate": 1e-3
+  },
+
+  "optimization_steps": 10,
+  "discount": 0.99,
+
+  "entropy_regularization": 1e-2,
+  "gae_lambda": null,
+  "likelihood_ratio_clipping": 0.2,
+
+  "states_preprocessing_spec": [
+    {
+      "type": "increase_dimension"
+    }
+  ]
+}

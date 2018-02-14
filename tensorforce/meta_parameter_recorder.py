@@ -258,7 +258,7 @@ class MetaParameterRecorder(object):
 
             if len(value) == 0:
                 continue
-            if isinstance(value,str):
+            if isinstance(value, str) or isinstance(value, unicode):
                 ops.append(tf.summary.text(key, tf.convert_to_tensor(str(value)))) 
             else:
                 ops.append(tf.summary.text(key, tf.as_string(tf.convert_to_tensor(value))))
