@@ -17,17 +17,32 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorforce.core.preprocessing import Preprocessor
+import tensorflow as tf
+
+from tensorforce import util
+from tensorforce.core.preprocessors import Preprocessor
 
 
-class Divide(Preprocessor):
+class Standardize(Preprocessor):
     """
-    Divide state by scale.
+    Standardize state. Subtract mean and divide by standard deviation.
     """
 
-    def __init__(self, scale, scope='divide', summary_labels=()):
-        self.scale = scale
-        super(Divide, self).__init__(scope=scope, summary_labels=summary_labels)
+    def __init__(
+        self,
+        shape,
+        across_batch=False,
+        scope='standardize',
+        summary_labels=()
+    ):
+        self.across_batch = across_batch
+        super(Standardize, self).__init__(shape=shape, scope=scope, summary_labels=summary_labels)
 
     def tf_process(self, tensor):
-        return tensor / self.scale
+        if self.across_batch:
+            axes = tuple(range(util.rank(tensor)))
+        else:
+            axes = tuple(range(1, util.rank(tensor)))
+
+        mean, variance = tf.nn.moments(x=tensor, axes=axes, keep_dims=True)
+        return (tensor - mean) / tf.maximum(x=tf.sqrt(variance), y=util.epsilon)

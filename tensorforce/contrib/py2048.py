@@ -31,18 +31,21 @@ class Game2048(Environment):
 
     def execute(self, actions):
         reward = 0
+        terminal = False
+
+        # Valid action
+        action_available = self.is_action_available(actions)
+        if not action_available:
+            #terminal = True
+            #reward = -1
+            return self._state, terminal, reward
+
+        reward = self.do_action(actions)
 
         # Terminal
         terminal = self.game_over()
         if terminal:
             return self._state, terminal, reward
-
-        # Valid action
-        action_available = self.is_action_available(actions)
-        if not action_available:
-            return self._state, terminal, reward
-
-        reward = self.do_action(actions)
 
         return self._state, terminal, reward
 
@@ -52,7 +55,7 @@ class Game2048(Environment):
 
     @property
     def states(self):
-        return dict(shape=self._state.shape, type='float')
+        return dict(shape=self._state.shape, type='int')
 
     @property
     def actions(self):

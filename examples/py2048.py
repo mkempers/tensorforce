@@ -56,10 +56,10 @@ def main():
     agent = Agent.from_spec(
         spec=agent_config,
         kwargs=dict(
-            states_spec=environment.states,
-            actions_spec=environment.actions,
-            network_spec=network_spec,
-            summary_spec=summary_spec
+            states=environment.states,
+            actions=environment.actions,
+            network=network_spec,
+            #summary=summary_spec
         )
     )
 
@@ -135,7 +135,7 @@ def main():
     )
 
     def episode_finished(r):
-        if r.episode % 250 == 0:
+        if r.episode % 10 == 0:
             sps = r.timestep / (time.time() - r.start_time)
             logger.info("Finished episode {ep} after {ts} timesteps. Steps Per Second {sps}".format(ep=r.episode, ts=r.timestep, sps=sps))
             logger.info("Episode reward: {}".format(r.episode_rewards[-1]))
@@ -147,7 +147,7 @@ def main():
 
     runner.run(
         timesteps=5000000,
-        episodes=10000,
+        episodes=20000,
         max_episode_timesteps=500000,
         deterministic=False,
         episode_finished=episode_finished

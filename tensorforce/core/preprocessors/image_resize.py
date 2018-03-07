@@ -18,25 +18,20 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-
-from tensorforce import util
-from tensorforce.core.preprocessing import Preprocessor
+from tensorforce.core.preprocessors import Preprocessor
 
 
-class Normalize(Preprocessor):
+class ImageResize(Preprocessor):
     """
-    Normalize state. Subtract minimal value and divide by range.
+    Resize image to width x height.
     """
 
-    def __init__(self, scope='normalize', summary_labels=()):
-        super(Normalize, self).__init__(scope=scope, summary_labels=summary_labels)
+    def __init__(self, shape, width, height, scope='image_resize', summary_labels=()):
+        self.size = (width, height)
+        super(ImageResize, self).__init__(shape=shape, scope=scope, summary_labels=summary_labels)
 
     def tf_process(self, tensor):
-        # Min/max across every axis except batch dimension.
-        min_value = tensor
-        max_value = tensor
-        for axis in range(1, util.rank(tensor)):
-            min_value = tf.reduce_min(input_tensor=min_value, axis=axis, keep_dims=True)
-            max_value = tf.reduce_max(input_tensor=max_value, axis=axis, keep_dims=True)
+        return tf.image.resize_images(images=tensor, size=self.size)
 
-        return (tensor - min_value) / (max_value - min_value + util.epsilon)
+    def processed_shape(self, shape):
+        return self.size + (shape[-1],)

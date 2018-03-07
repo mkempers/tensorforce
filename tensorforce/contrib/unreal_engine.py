@@ -28,7 +28,7 @@ class UE4Environment(RemoteEnvironment, StateSettableEnvironment):
     """
     A special RemoteEnvironment for UE4 game connections.
     Communicates with the remote to receive information on the definitions of action- and observation spaces.
-    Sends UE4 Action- and Axis-mappings as RL-actions and receives observations back defined by ducandu plugin Observer
+    Sends UE4 Action- and Axis-mappings as RL-actions and receives observations back defined by MLObserver
     objects placed in the Game
     (these could be camera pixels or other observations, e.g. a x/y/z position of some game actor).
     """
@@ -50,8 +50,8 @@ class UE4Environment(RemoteEnvironment, StateSettableEnvironment):
                 This would be necessary e.g. for agents that use q-networks where the output are q-values per discrete
                 state-action pair.
             delta_time (float): The fake delta time to use for each single game tick.
-            num_ticks (int): The number of ticks to be executed in this step (each tick will repeat the same given
-            actions).
+            num_ticks (int): The number of ticks to be executed in a single act call (each tick will
+                repeat the same given actions).
         """
         RemoteEnvironment.__init__(self, host, port)
 
@@ -75,8 +75,8 @@ class UE4Environment(RemoteEnvironment, StateSettableEnvironment):
         return "UE4Environment({}:{}{})".format(self.host, self.port, "[connected; {}]".
                                                 format(self.game_name) if self.socket else "")
 
-    def connect(self):
-        RemoteEnvironment.connect(self)
+    def connect(self, timeout=600):
+        RemoteEnvironment.connect(self, timeout)
 
         # Get action- and state-specs from our game.
         self.protocol.send({"cmd": "get_spec"}, self.socket)
@@ -86,9 +86,15 @@ class UE4Environment(RemoteEnvironment, StateSettableEnvironment):
             raise TensorForceError("ERROR in UE4Environment.connect: no observation- or action-space-desc sent "
                                    "by remote server!")
 
+        # Game's name
+        self.game_name = response.get("game_name")  # keep non-mandatory for now
         # Observers
+        if "observation_space_desc" not in response:
+            raise TensorForceError("Response to `get_spec` does not contain field `observation_space_desc`!")
         self.observation_space_desc = response["observation_space_desc"]
         # Action-mappings
+        if "action_space_desc" not in response:
+            raise TensorForceError("Response to `get_spec` does not contain field `action_space_desc`!")
         self.action_space_desc = response["action_space_desc"]
 
         if self.discretize_actions:
@@ -108,9 +114,9 @@ class UE4Environment(RemoteEnvironment, StateSettableEnvironment):
         # Wait for response.
         response = self.protocol.recv(self.socket)
         if "status" not in response:
-            raise RuntimeError("Message without field 'status' received!")
+            raise TensorForceError("Message without field 'status' received!")
         elif response["status"] != "ok":
-            raise RuntimeError("Message 'status' for seed command is not 'ok' ({})!".format(response["status"]))
+            raise TensorForceError("Message 'status' for seed command is not 'ok' ({})!".format(response["status"]))
         return seed
 
     def reset(self):

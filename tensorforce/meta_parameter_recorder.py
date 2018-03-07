@@ -81,7 +81,7 @@ class MetaParameterRecorder(object):
                 )
             self.meta_params[key] = custom_dict[key]
         # This line assumes the merge data came from summary_spec['meta_dict'], remove this from summary_spec
-        del self.meta_params['summary_spec']['meta_dict']
+        del self.meta_params['summarizer']['meta_dict']
 
     def text_output(self, format_type=1):
         print('======================= ' + self.meta_params['AgentName'] + ' ====================================')
@@ -258,10 +258,12 @@ class MetaParameterRecorder(object):
 
             if len(value) == 0:
                 continue
-            if isinstance(value, str) or isinstance(value, unicode):
-                ops.append(tf.summary.text(key, tf.convert_to_tensor(str(value)))) 
+            if isinstance(value, str) or isinstance(value, np.unicode):
+                ops.append(tf.summary.text(key, tf.convert_to_tensor(str(value))))
+            if isinstance(value, str):
+                ops.append(tf.summary.text(name=key, tensor=tf.convert_to_tensor(str(value))))
             else:
-                ops.append(tf.summary.text(key, tf.as_string(tf.convert_to_tensor(value))))
+                ops.append(tf.summary.text(name=key, tensor=tf.as_string(tf.convert_to_tensor(value))))
 
         with tf.control_dependencies(tf.tuple(ops)):
             self.summary_merged = tf.summary.merge_all()

@@ -18,22 +18,18 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-
-from tensorforce import util
-from tensorforce.core.preprocessing import Preprocessor
+from tensorforce.core.preprocessors import Preprocessor
 
 
-class Flatten(Preprocessor):
+class Clip(Preprocessor):
     """
-    Normalize state. Subtract minimal value and divide by range.
+    Clip by min/max.
     """
 
-    def __init__(self, scope='flatten', summary_labels=()):
-        super(Flatten, self).__init__(scope=scope, summary_labels=summary_labels)
-
-    def processed_shape(self, shape):
-        return -1, util.prod(shape[1:])
+    def __init__(self, shape, min_value, max_value, scope='clip', summary_labels=()):
+        self.min_value = min_value
+        self.max_value = max_value
+        super(Clip, self).__init__(shape=shape, scope=scope, summary_labels=summary_labels)
 
     def tf_process(self, tensor):
-        # Flatten tensor
-        return tf.reshape(tensor=tensor, shape=self.processed_shape(util.shape(tensor)))
+        return tf.clip_by_value(t=tensor, clip_value_min=self.min_value, clip_value_max=self.max_value)

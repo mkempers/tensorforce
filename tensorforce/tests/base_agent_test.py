@@ -19,7 +19,7 @@ from __future__ import division
 
 from tensorforce.tests.base_test import BaseTest
 from tensorforce.core.networks import Dense, LayerBasedNetwork
-from tensorforce.environments.minimal_test import MinimalTest
+from tensorforce.environments import MinimalTest
 
 
 class BaseAgentTest(BaseTest):
@@ -48,14 +48,15 @@ class BaseAgentTest(BaseTest):
 
         environment = MinimalTest(specification={'bool': ()})
 
-        network_spec = [
+        network = [
             dict(type='dense', size=32),
             dict(type='dense', size=32)
         ]
+
         self.base_test_pass(
             name='bool',
             environment=environment,
-            network_spec=network_spec,
+            network=network,
             **self.__class__.config
         )
 
@@ -67,7 +68,7 @@ class BaseAgentTest(BaseTest):
             return
 
         environment = MinimalTest(specification={'int': ()})
-        network_spec = [
+        network = [
             dict(type='dense', size=32),
             dict(type='dense', size=32)
         ]
@@ -75,7 +76,7 @@ class BaseAgentTest(BaseTest):
         self.base_test_pass(
             name='int',
             environment=environment,
-            network_spec=network_spec,
+            network=network,
             **self.__class__.config
         )
 
@@ -87,14 +88,15 @@ class BaseAgentTest(BaseTest):
             return
 
         environment = MinimalTest(specification={'float': ()})
-        network_spec = [
+        network = [
             dict(type='dense', size=32),
             dict(type='dense', size=32)
         ]
+
         self.base_test_pass(
             name='float',
             environment=environment,
-            network_spec=network_spec,
+            network=network,
             **self.__class__.config
         )
 
@@ -106,14 +108,15 @@ class BaseAgentTest(BaseTest):
             return
 
         environment = MinimalTest(specification={'bounded': ()})
-        network_spec = [
+        network = [
             dict(type='dense', size=32),
             dict(type='dense', size=32)
         ]
+
         self.base_test_pass(
             name='bounded',
             environment=environment,
-            network_spec=network_spec,
+            network=network,
             **self.__class__.config
         )
 
@@ -185,7 +188,10 @@ class BaseAgentTest(BaseTest):
                 for y in xs[1:]:
                     x *= y
 
-                return (x, list()) if return_internals else x
+                if return_internals:
+                    return x, dict()
+                else:
+                    return x
 
         specification = dict()
         if not exclude_bool:
@@ -199,20 +205,12 @@ class BaseAgentTest(BaseTest):
 
         environment = MinimalTest(specification=specification)
 
-        if self.__class__.multi_config is None:
-            self.base_test_run(
-                name='multi',
-                environment=environment,
-                network_spec=CustomNetwork,
-                **self.__class__.config
-            )
-        else:
-            self.base_test_run(
-                name='multi',
-                environment=environment,
-                network_spec=CustomNetwork,
-                **self.__class__.multi_config
-            )
+        self.base_test_run(
+            name='multi',
+            environment=environment,
+            network=CustomNetwork,
+            **self.__class__.config
+        )
 
     def test_lstm(self):
         """
@@ -222,7 +220,7 @@ class BaseAgentTest(BaseTest):
             return
 
         environment = MinimalTest(specification={'int': ()})
-        network_spec = [
+        network = [
             dict(type='dense', size=32),
             dict(type='dense', size=32),
             dict(type='internal_lstm', size=32)
@@ -231,6 +229,6 @@ class BaseAgentTest(BaseTest):
         self.base_test_pass(
             name='lstm',
             environment=environment,
-            network_spec=network_spec,
+            network=network,
             **self.__class__.config
         )
