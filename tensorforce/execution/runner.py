@@ -99,9 +99,9 @@ class Runner(BaseRunner):
             # time step (within episode) loop
             while True:
                 action = self.agent.act(states=state, deterministic=deterministic)
-
-                if not self.environment.is_action_available(action):
-                    action = random.choice(self.environment.available_actions())
+                #
+                # if not self.environment.is_action_available(action):
+                #     action = random.choice(self.environment.available_actions())
 
                 reward = 0
                 for repeat in xrange(self.repeat_actions):

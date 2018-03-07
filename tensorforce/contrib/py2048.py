@@ -33,19 +33,18 @@ class Game2048(Environment):
         reward = 0
         terminal = False
 
-        # Valid action
-        # action_available = self.is_action_available(actions)
-        # if not action_available:
-        #     #terminal = True
-        #     #reward = -1
-        #     return self._state, terminal, reward
-
-        reward = self.do_action(actions)
-
         # Terminal
         terminal = self.game_over()
         if terminal:
             return self._state, terminal, reward
+
+        # Valid action
+        action_available = self.is_action_available(actions)
+        if not action_available:
+            #self.add_random_tile()
+            return self._state, terminal, reward
+
+        reward = self.do_action(actions)
 
         return self._state, terminal, reward
 
