@@ -26,8 +26,9 @@
 
     "baseline_mode": "states",
     "baseline": {
-        "type": "mlp",
-        "sizes": [32, 32]
+        "type": "cnn",
+        "conv_sizes": [32, 32],
+        "dense_sizes": [32]
     },
     "baseline_optimizer": {
         "type": "multi_step",
@@ -46,10 +47,5 @@
         "directory": null,
         "labels": [],
         "seconds": 120
-    },
-    "states_preprocessing": [
-        {
-            "type": "flatten"
-        }
-    ]
+    }
 }

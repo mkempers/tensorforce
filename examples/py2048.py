@@ -49,6 +49,11 @@ def main():
         network_spec = None
         logger.info("No network configuration provided.")
 
+    if network_spec[0]['type'] == 'conv2d':
+        agent_config['states_preprocessing'] = [{'type': 'increase_dimension'}]
+    else:
+        agent_config['states_preprocessing'] = [{'type': 'flatten'}]
+
     logger.info("Start training")
 
     environment = Game2048()
@@ -135,7 +140,7 @@ def main():
     )
 
     def episode_finished(r):
-        if r.episode % 10 == 0:
+        if r.episode % 100 == 0:
             sps = r.timestep / (time.time() - r.start_time)
             logger.info("Finished episode {ep} after {ts} timesteps. Steps Per Second {sps}".format(ep=r.episode, ts=r.timestep, sps=sps))
             logger.info("Episode reward: {}".format(r.episode_rewards[-1]))

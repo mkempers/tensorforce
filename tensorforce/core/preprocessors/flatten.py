@@ -32,6 +32,8 @@ class Flatten(Preprocessor):
         super(Flatten, self).__init__(shape=shape, scope=scope, summary_labels=summary_labels)
 
     def processed_shape(self, shape):
+        if shape[0] == -1:
+            return -1, util.prod(shape[1:])
         return util.prod(shape),
 
     def tf_process(self, tensor):
